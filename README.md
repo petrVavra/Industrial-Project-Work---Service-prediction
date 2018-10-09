@@ -28,7 +28,7 @@ ArduinoX    --->
         * who should measure period?,
 * make a way how to transfer data to PLC,
     * try a ne
-* consider who should evaluate data, make evaluation and predictive algorithms and transfer to top level PLC.,
+* consider who should evaluate data, make evaluation and predictive algorithms and transfer to top level PLC,
     * this shoul probably be Raspberry PI, than there should be only tiny data line to PLC,
 * consider adding other sensor,
     * new vibration sensor, misalignment sensor (ultrasonic).
