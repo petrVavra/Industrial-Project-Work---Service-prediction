@@ -2,12 +2,15 @@
 #define encoder0PinA 2 
 #define encoder0PinB 3
 
-volatile unsigned int encoder0Pos = 0;
+volatile long encoder0Pos = 0;
+volatile bool isThereANeedToTransfer = false;
 
-float angle = 0.0;
 
 void setup() 
 { 
+    Wire.begin(10);
+    Wire.onRequest(transferI2C);
+
     pinMode(encoder0PinA, INPUT);
     pinMode(encoder0PinB, INPUT);
 
@@ -22,10 +25,20 @@ void setup()
 
 void loop()
 {
+    
+    Serial.print(millis());
+    Serial.print("\t");
     Serial.println(encoder0Pos, DEC); 
-    angle = encoder0Pos *(3.0/20.0); 
-    Serial.println(angle);
+    //angle = encoder0Pos *(3.0/20.0); 
+    //Serial.println(angle);
 }
+
+void transferI2C()
+{
+    Wire.write(encoder0Pos);
+    encoder0Pos = 0;
+}
+
 void doEncoderA()
 {
     // look for a low-to-high on channel A 
@@ -52,7 +65,9 @@ void doEncoderA()
         encoder0Pos = encoder0Pos - 1; // CCW
         } 
     }
+    isThereANeedToTransfer = true;
 }
+
 void doEncoderB()
 {
     // look for a low-to-high on channel B 
@@ -77,4 +92,6 @@ void doEncoderB()
             encoder0Pos = encoder0Pos - 1; // CCW
         } 
     }
+    isThereANeedToTransfer = true;
 }
+
