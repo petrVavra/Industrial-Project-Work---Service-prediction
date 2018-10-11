@@ -1,10 +1,13 @@
 #include <Arduino.h>
+#include <Wire.h>
+
 #define encoder0PinA 2 
 #define encoder0PinB 3
 
 volatile long encoder0Pos = 0;
 volatile bool isThereANeedToTransfer = false;
 
+void transferI2C();
 
 void setup() 
 { 
@@ -14,21 +17,23 @@ void setup()
     pinMode(encoder0PinA, INPUT);
     pinMode(encoder0PinB, INPUT);
 
+    
     void doEncoderA();
     void doEncoderB();
     // encoder pin on interrupt 0(pin 2)
     attachInterrupt(digitalPinToInterrupt(encoder0PinA), doEncoderA, CHANGE);
     // encoder pin on interrupt 1(pin 3)
     attachInterrupt(digitalPinToInterrupt(encoder0PinB), doEncoderB, CHANGE); 
+    
     Serial.begin(9600);
 }
 
 void loop()
 {
-    
-    Serial.print(millis());
-    Serial.print("\t");
-    Serial.println(encoder0Pos, DEC); 
+    //delay(1);
+    //Serial.println(micros());
+    //Serial.print("\t");
+    //Serial.println(encoder0Pos, DEC); 
     //angle = encoder0Pos *(3.0/20.0); 
     //Serial.println(angle);
 }
@@ -37,6 +42,7 @@ void transferI2C()
 {
     Wire.write(encoder0Pos);
     encoder0Pos = 0;
+    //Serial.println("T"/*Transfer*/);
 }
 
 void doEncoderA()
