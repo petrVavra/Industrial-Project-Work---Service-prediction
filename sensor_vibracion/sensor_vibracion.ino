@@ -1,13 +1,5 @@
-// Arduino code is available to download - link below the video
+//sensor de vibracion
 
-/* Vibration sensor connected to Arduino pins as follows:
- Arduino            Vibration Sensor
-   D9                    DOut
-   GND                   GND
-   +5V                   VCC     
-   
-   D13                Indication LED   
-*/
 
 int ledPin = 13;
 int EP =9;
@@ -16,14 +8,15 @@ void setup(){
   pinMode(ledPin, OUTPUT);
   pinMode(EP, INPUT); //set EP input for measurment
   Serial.begin(9600); //init serial 9600
-  Serial.println("----------------------Vibration demo------------------------");
+ // Serial.println("----------------------Vibration demo------------------------");
 }
+
 void loop(){
   long measurement =TP_init();
   delay(50);
-  Serial.print("measurment = ");
+ // Serial.print("measurment = ");
   Serial.println(measurement);
-  if (measurement > 1000){
+  if (measurement > 50){
     digitalWrite(ledPin, HIGH);
   }
   else{
