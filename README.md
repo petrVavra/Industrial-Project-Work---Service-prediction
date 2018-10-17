@@ -41,16 +41,16 @@ Arduino2    --->          Raspberry Pi      --->    WebBroser Visualization
 ```
 ## Source code
 
-Arduino1 - RotaryEncoder folder source - written in PlatformIO IDE
-Arduino2 - TemperatureDHT11 folder source - written in PlatformIO IDE
-Raspberry Pi - Rasbperry Pi - written in Codesys
+* Arduino1 - RotaryEncoder folder source - written in PlatformIO IDE
+* Arduino2 - TemperatureDHT11 folder source - written in PlatformIO IDE
+* Raspberry Pi - Rasbperry Pi - written in Codesys
 
 ## I2C tranfer data
 
-Arduino1 
-* 4 bytes - type C long (counted movement of encoder, sign of the value marks the direction)
-* Whenever is the value transfered, then the counter of movement is reseted to 0
-Arduino2 
-* 2 bytes - type C uint8_t (temperature [°C]), type C uint8_t (hudimity [%])
+* Arduino1 
+    * 4 bytes - type C long (counted movement of encoder, sign of the value marks the direction)
+    * Whenever is the value transfered, then the counter of movement is reseted to 0
+* Arduino2 
+    * 2 bytes - type C uint8_t (temperature [°C]), type C uint8_t (hudimity [%])
 
 
