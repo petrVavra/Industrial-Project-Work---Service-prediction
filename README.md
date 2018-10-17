@@ -7,7 +7,7 @@ This project is done by Petr Vávra and Cecilia Fili under direction of Thomas S
 # Sensors and actuators:
 
 * Rotary encoder - LPD-3086
-* Temperature sensor - DHT11? DS18B20?
+* Temperature sensor - DHT11 (currenty in use) DS18B20 (considered replacement)
 * Vibration sensor - 
 
 # Architecture
@@ -35,9 +35,9 @@ ArduinoX    --->
 
 # Current development archutecture and source code description
 ```
-            I2C             Codesys 
-Arduino1    --->                                    (localhost)
-Arduino2    --->          Raspberry Pi      --->    WebBroser Visualization       
+                    I2C             Codesys 
+Rotary Enc  --->    Arduino1    --->                                    (localhost)
+Temp+Hud    --->    Arduino2    --->    Raspberry Pi      --->    WebBroser Visualization       
 ```
 ## Source code
 
