@@ -26,10 +26,12 @@ ArduinoX    --->
     * decide, which connection is the best - Serial, I2C, consider others,
     * design a way how to transfer data (a binary protocol, ...), espacialy consider and test period,
         * who should measure period?,
+        * these questions will be answered after the final protocol will be set,
 * make a way how to transfer data to PLC,
-    * try a ne
-* consider who should evaluate data, make evaluation and predictive algorithms and transfer to top level PLC,
-    * this shoul probably be Raspberry PI, than there should be only tiny data line to PLC,
+    * this should be easily done in Codesys enviroment,
+    * unpacked field yet, 
+* consider, who should evaluate data, make evaluation and predictive algorithms and transfer to top level PLC,
+    * this should probably be Raspberry PI, than there should be only tiny data line to PLC,
 * consider adding other sensor,
     * new vibration sensor, misalignment sensor (ultrasonic).
 
@@ -41,9 +43,9 @@ Temp+Hud    --->    Arduino2    --->    Raspberry Pi      --->    WebBroser Visu
 ```
 ## Source code
 
-* Arduino1 - [RotaryEncoder folder source](../RotaryEncoder) - written in PlatformIO IDE
-* Arduino2 - [TemperatureDHT11 folder source](../TemperatureDHT11) - written in PlatformIO IDE
-* Raspberry Pi - [RasbperryPi folder source](../RaspberryPi) - written in Codesys
+* Arduino1 - [RotaryEncoder folder source](../master/RotaryEncoder) - written in PlatformIO IDE
+* Arduino2 - [TemperatureDHT11 folder source](../master/TemperatureDHT11) - written in PlatformIO IDE
+* Raspberry Pi - [RasbperryPi folder source](../master/RaspberryPi) - written in Codesys
 
 ## I2C tranfer data
 
