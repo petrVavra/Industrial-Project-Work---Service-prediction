@@ -53,3 +53,5 @@ For programming of Raspberry Pi is used [Codesys](https://store.codesys.com/code
 
 We are back on the trees. Now we will try to make a simple data transfer to Codesys over TCP/IP protocol. 
 
+We have found that there is a suitable protocol for communication between microcontroller and Raspberry PI - Modbus. It is implemented to Codesys enviroment - there is a [tutorial](https://www.youtube.com/watch?v=lKORELpasPM) how to run that on Raspberry Pi and also a [library](https://github.com/petrVavra/Industrial-Project-Work---Service-prediction/tree/wirelessSolution) for ESP8266 microcontroller.
+
