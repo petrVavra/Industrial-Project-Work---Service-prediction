@@ -132,7 +132,7 @@ void setup()
 
 void loop() 
 {
-  if(!WiFi.isConnected){
+  if(!WiFi.isConnected()){
     WiFi.reconnect();
   }
   #ifdef COMMUNICATION_MODBUS
