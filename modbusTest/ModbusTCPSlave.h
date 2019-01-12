@@ -22,13 +22,13 @@
 #ifndef ModbusTCPSlave_h
 #define ModbusTCPSlave_h
 
-#define MB_PORT 502  
+#define MB_PORT 502
 
 //#define MB_ETHERNET
 //#define MB_CC3000
 #define MB_ESP8266
 
-#define MBDebug     //serial debug enable
+//#define MBDebug     //serial debug enable
 
 #include "Arduino.h"
 
@@ -85,37 +85,37 @@
 
 class ModbusTCPSlave
 {
-public:
-  ModbusTCPSlave(void);
+  public:
+    ModbusTCPSlave(void);
 #ifdef MB_ETHERNET
     void begin();
-    void begin(uint8_t ip[4],uint8_t gateway[4],uint8_t subnet[4]);
+    void begin(uint8_t ip[4], uint8_t gateway[4], uint8_t subnet[4]);
 #endif
 #ifdef MB_CC3000
     void begin(const char *ssid, const char *key, uint8_t secmode);
 #endif
 #ifdef MB_ESP8266
     void begin(const char *ssid, const char *key);
-    void begin(const char *ssid, const char *key,uint8_t ip[4],uint8_t gateway[4],uint8_t subnet[4]);
+    void begin(const char *ssid, const char *key, uint8_t ip[4], uint8_t gateway[4], uint8_t subnet[4]);
 #endif
     void Run();
     unsigned int  MBInputRegister[maxInputRegister];
     unsigned int  MBHoldingRegister[maxHoldingRegister];
 
-private: 
+  private:
     byte ByteArray[260];
     bool ledPinStatus = LOW;
-    
-    
+
+
 #ifdef MB_ETHERNET
     EthernetServer MBServer;
 #endif
-    
+
 #ifdef MB_CC3000
     Adafruit_CC3000 MBClient;
     Adafruit_CC3000_Server MBServer;
 #endif
-    
+
 #ifdef MB_ESP8266
     WiFiServer MBServer;
 #endif

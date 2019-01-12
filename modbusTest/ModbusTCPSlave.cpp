@@ -279,6 +279,10 @@ void ModbusTCPSlave::Run() {
         }
         Serial.println();
 #endif
+        //EDIT 14/11/18
+        MBInputRegister[0] = 0;
+        MBInputRegister[1] = 0;
+        //end of edit
         byteFN = MB_FC_NONE;
         break;
 
