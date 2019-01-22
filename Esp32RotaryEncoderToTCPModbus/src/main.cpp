@@ -6,7 +6,6 @@
 #endif
 
 #define DEVICE_ROTARY_ENCODER
-#define DEVICE_THERMOMETER_DS18B20
 #define COMMUNICATION_MODBUS
 
 #ifdef DEVICE_ROTARY_ENCODER
@@ -40,11 +39,7 @@ RotaryEncoder encoder;
 void rotaryEncoderHasMoved()
 {
   Serial.println(RotaryEncoder::encoderPos);
-  #ifdef COMMUNICATION_MQTT
-    // TODO: make a list of records
-    
-  #endif
-
+  //TODO: possibly introduce some realtime data storage
 }
 // Initiate static variables
 volatile long RotaryEncoder::encoderPos = 0;
@@ -112,8 +107,11 @@ PubSubClient client(espClient);
 unsigned long lastMsg = 0;
 char msg[50];
 
+const int mqttMessagesSendingPeriod = 2000;
+
 const char* mqtt_server = "broker.mqtt-dashboard.com";
 #ifdef DEVICE_THERMOMETER_DS18B20
+const char* mqttTopicDS18B20Encoder = "/BLABLABLBA/";
 #endif
 #ifdef DEVICE_ROTARY_ENCODER
 const char* mqttTopicRotaryEncoder = "/BLABLABLBA/";
@@ -215,6 +213,9 @@ void loop()
   #ifdef DEVICE_ROTARY_ENCODER
   mb.Hreg(RotaryEncoderRegister, (uint16_t) RotaryEncoder::encoderPos);
   #endif 
+  #ifdef DEVICE_THERMOMETER_DS18B20
+  mb.Hreg(RotaryEncoderRegister, (uint16_t) temperatureDS18B20);
+  #endif
   #endif
   #ifdef COMMUNICATION_MQTT
   if (!client.connected()) {
@@ -222,13 +223,18 @@ void loop()
   }
   client.loop();
   
-  if (millis() - lastMsg >= 2000) {
-    
+  if (millis() - lastMsg >= mqttMessagesSendingPeriod) {
     #ifdef DEVICE_ROTARY_ENCODER
     snprintf(msg, 50, "%lu", RotaryEncoder::encoderPos);
     Serial.print("Publish message: ");
     Serial.println(msg);
     client.publish(mqttTopicRotaryEncoder, msg);
+    #endif
+    #ifdef DEVICE_THERMOMETER_DS18B20
+    snprintf(msg, 50, "%lu", temperatureDS18B20);
+    Serial.print("Publish message: ");
+    Serial.println(msg);
+    client.publish(mqttTopicDS18B20Encoder, msg);
     #endif
     lastMsg = millis();
   }
