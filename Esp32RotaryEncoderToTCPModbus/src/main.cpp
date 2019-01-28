@@ -5,8 +5,8 @@
  #include <WiFi.h>
 #endif
 
-//#define DEVICE_ROTARY_ENCODER
-#define DEVICE_THERMOMETER_DS18B20
+#define DEVICE_ROTARY_ENCODER
+//#define DEVICE_THERMOMETER_DS18B20
 #define COMMUNICATION_MODBUS
 
 #ifdef DEVICE_ROTARY_ENCODER
@@ -39,16 +39,17 @@
 RotaryEncoder encoder;
 void rotaryEncoderHasMoved()
 {
-  Serial.println(RotaryEncoder::encoderPos);
+  //Serial.println(RotaryEncoder::encoderPos.asLong);
   //TODO: possibly introduce some realtime data storage
 }
+
 // Initiate static variables
-volatile long RotaryEncoder::encoderPos = 0;
+volatile EncoderPosition RotaryEncoder::encoderPos = { .asLong = 0 };
 void (*RotaryEncoder::function_callback)() = rotaryEncoderHasMoved;
 
 void initRotaryEncoder()
 {
-  
+
   pinMode(encoder0PinA , INPUT_PULLUP);
   pinMode(encoder0PinB , INPUT_PULLUP);
   // encoder pin on interrupt 0 (pin 2)
@@ -65,11 +66,17 @@ const int oneWireBusPin = 4;
 const int thermometerDS18B20Resolution = 9;
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(oneWireBusPin);
-// Pass our oneWire reference to Dallas Temperature. 
+// Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
 
 unsigned long lastTempRequest = 0;
-float temperatureDS18B20 = 0.0;
+
+union temperatureDataStorage
+{
+  float dataAsFloat;
+  uint16_t dataAsInt[sizeof(float)/2];
+}temperatureDS18B20;
+
 
 
 void initThermoterDS18B20()
@@ -86,7 +93,7 @@ void initThermoterDS18B20()
 #ifdef COMMUNICATION_MODBUS
 // Modbus Registers Offsets (0-9999)
 const int RotaryEncoderRegister = 0;
-const int TemperatureSensorDS18B20Register = 20;
+const int TemperatureSensorDS18B20Register = 0;
 //ModbusIP object
 ModbusIP mb;
 
@@ -94,10 +101,10 @@ void initializeModbus()
 {
   mb.begin();
   #ifdef DEVICE_ROTARY_ENCODER
-  mb.addHreg(RotaryEncoderRegister, 0);
+  mb.addHreg(RotaryEncoderRegister, 0, 2);
   #endif
   #ifdef DEVICE_THERMOMETER_DS18B20
-  mb.addHreg(TemperatureSensorDS18B20Register, 0);
+  mb.addHreg(TemperatureSensorDS18B20Register, 0, 2);
   #endif
 }
 #endif
@@ -169,25 +176,25 @@ const char* password = "FKPIFURCSZKKXHRZKSV3";
 void connectToWifi()
 {
   WiFi.begin(ssid, password);
-  
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
- 
+
   Serial.println("");
-  Serial.println("WiFi connected");  
+  Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 }
 
-void setup() 
+void setup()
 {
   #ifdef ESP8266
   Serial.begin(74880);
   #else //ESP32
   Serial.begin(115200);
-  #endif 
+  #endif
   connectToWifi();
   #ifdef DEVICE_ROTARY_ENCODER
   initRotaryEncoder();
@@ -204,7 +211,7 @@ void setup()
   #endif
 }
 
-void loop() 
+void loop()
 {
   if(!WiFi.isConnected()){
     WiFi.reconnect();
@@ -212,10 +219,12 @@ void loop()
   #ifdef COMMUNICATION_MODBUS
   mb.task();
   #ifdef DEVICE_ROTARY_ENCODER
-  mb.Hreg(RotaryEncoderRegister, (uint16_t) RotaryEncoder::encoderPos);
-  #endif 
+  mb.Hreg(RotaryEncoderRegister, RotaryEncoder::encoderPos.asInt[0]);
+  mb.Hreg(RotaryEncoderRegister+1, RotaryEncoder::encoderPos.asInt[1]);
+  #endif
   #ifdef DEVICE_THERMOMETER_DS18B20
-  mb.Hreg(RotaryEncoderRegister, (uint16_t) temperatureDS18B20);
+  mb.Hreg(TemperatureSensorDS18B20Register, temperatureDS18B20.dataAsInt[0]);
+  mb.Hreg(TemperatureSensorDS18B20Register+1, temperatureDS18B20.dataAsInt[1]);
   #endif
   #endif
   #ifdef COMMUNICATION_MQTT
@@ -223,7 +232,7 @@ void loop()
     reconnect();
   }
   client.loop();
-  
+
   if (millis() - lastMsg >= mqttMessagesSendingPeriod) {
     #ifdef DEVICE_ROTARY_ENCODER
     snprintf(msg, 50, "%lu", RotaryEncoder::encoderPos);
@@ -232,7 +241,7 @@ void loop()
     client.publish(mqttTopicRotaryEncoder, msg);
     #endif
     #ifdef DEVICE_THERMOMETER_DS18B20
-    snprintf(msg, 50, "%lu", temperatureDS18B20);
+    snprintf(msg, 50, "%lu", temperatureDS18B20.dataAsFloat);
     Serial.print("Publish message: ");
     Serial.println(msg);
     client.publish(mqttTopicDS18B20Encoder, msg);
@@ -244,11 +253,11 @@ void loop()
   #ifdef DEVICE_THERMOMETER_DS18B20
   if (millis() - lastTempRequest >= 750/ (1 << (12-thermometerDS18B20Resolution))) // waited long enough??
   {
-    temperatureDS18B20 = sensors.getTempCByIndex(0);
-    sensors.requestTemperatures(); 
+    temperatureDS18B20.dataAsFloat = sensors.getTempCByIndex(0);
+    sensors.requestTemperatures();
     lastTempRequest = millis();
   }
   #endif
 
-  delay(200);
+  delay(2);
 }
