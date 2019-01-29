@@ -8,6 +8,7 @@
 #define DEVICE_ROTARY_ENCODER
 //#define DEVICE_THERMOMETER_DS18B20
 #define COMMUNICATION_MODBUS
+#define COMMUNICATION_MQTT
 
 #ifdef DEVICE_ROTARY_ENCODER
   #include "RotaryEncoder.h"
@@ -115,14 +116,14 @@ PubSubClient client(espClient);
 unsigned long lastMsg = 0;
 char msg[50];
 
-const int mqttMessagesSendingPeriod = 2000;
+const int mqttMessagesSendingPeriod = 300;
 
-const char* mqtt_server = "broker.mqtt-dashboard.com";
+const char* mqtt_server = "192.168.1.127";
 #ifdef DEVICE_THERMOMETER_DS18B20
-const char* mqttTopicDS18B20Encoder = "/BLABLABLBA/";
+const char* mqttTopicDS18B20Encoder = "/Temperature/";
 #endif
 #ifdef DEVICE_ROTARY_ENCODER
-const char* mqttTopicRotaryEncoder = "/BLABLABLBA/";
+const char* mqttTopicRotaryEncoder = "/RotaryEncoder/";
 #endif
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -235,13 +236,13 @@ void loop()
 
   if (millis() - lastMsg >= mqttMessagesSendingPeriod) {
     #ifdef DEVICE_ROTARY_ENCODER
-    snprintf(msg, 50, "%lu", RotaryEncoder::encoderPos);
+    snprintf(msg, 50, "%ld", RotaryEncoder::encoderPos.asLong);
     Serial.print("Publish message: ");
     Serial.println(msg);
     client.publish(mqttTopicRotaryEncoder, msg);
     #endif
     #ifdef DEVICE_THERMOMETER_DS18B20
-    snprintf(msg, 50, "%lu", temperatureDS18B20.dataAsFloat);
+    snprintf(msg, 50, "%f", temperatureDS18B20.dataAsFloat);
     Serial.print("Publish message: ");
     Serial.println(msg);
     client.publish(mqttTopicDS18B20Encoder, msg);
