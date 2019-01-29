@@ -1,10 +1,16 @@
+/*
+    Code inspired by tutorial found on http://www.vikipedialabs.com/learn.html
+*/
+
 #ifndef RotaryEncoder_h
 #define RotaryEncoder_h
 #include "Arduino.h"
 
+// specify GPIO pins, to which are channel A and B pluged in 
 const int encoder0PinA  = 25;
 const int encoder0PinB  = 26;
 
+// In purpose of sending data over modbus we introduce this union as a data storage.
 union EncoderPosition
 {
     long asLong;
@@ -21,6 +27,16 @@ class RotaryEncoder
         static void (*function_callback)(void);
 
         static volatile EncoderPosition encoderPos;
+
+        static void initRotaryEncoder()
+        {
+            // initialize digital pins
+            pinMode(encoder0PinA , INPUT_PULLUP);
+            pinMode(encoder0PinB , INPUT_PULLUP);
+            // turn pin into interrupt and assign handling function
+            attachInterrupt(digitalPinToInterrupt(encoder0PinA), RotaryEncoder::doEncoderA, CHANGE);
+            attachInterrupt(digitalPinToInterrupt(encoder0PinB), RotaryEncoder::doEncoderB, CHANGE);
+        }
        
         static void doEncoderA()
         {

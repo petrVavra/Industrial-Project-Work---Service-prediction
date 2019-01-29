@@ -2,58 +2,45 @@
 
 Aim of this project is to bring with a new cheaper way how to bring data from sensors and actuators to OPC UA. 
 
-It will be done by inerconnecting sensors to microcontroller (ESP8266) and then transfering data over Wi-fi to Raspberry PI, which will be running [Codesys Control for Raspberry PI](https://store.codesys.com/codesys-control-for-raspberry-pi-sl.html). 
-
-Furthure development will be concerned about interpertting data from sensors and trying to make some clever predictions. 
+It will be done by interconnecting sensors to microcontroller (ESP8266 or ESP32) and then transfering data over Wi-fi to Raspberry PI, which will be running [Codesys Control for Raspberry PI](https://store.codesys.com/codesys-control-for-raspberry-pi-sl.html) and/or  [Node-Red](https://nodered.org). 
 
 This project is done by Petr Vávra and Cecilia Fili and supervised by Thomas Schichl in course of Industrial Project Work at the University of Applied Sciences Upper Austria in Winter semester 2018/19.
-
 
 # Sensors and actuators:
 
 * Rotary encoder - LPD-3086
-* Temperature sensor - DHT11 (currenty in use) DS18B20 (considered replacement)
-* Vibration sensor -
+* Temperature sensor - DS18B20 (considered replacement)
 
-# Microcontroller
+# Microcontroller (MCU)
 
-We switched from Arduino to ESP8266 because of its Wi-Fi capability. 
+* ESP8266
+* ESP32
 
 # Architecture
 ```
             Wi-Fi
-            TCP/IP
-ESP8266[0]  --->
-ESP8266[1]  --->                        Codesys server
-.           --->        Raspberry PI        --->    OPC UA
-.           --->
-ESP8266[n]  --->
+    TCP/IP - Modbus and/or MQTT
+MCU[0]  --->                            
+MCU[1]  --->                            --->    Codesys visualization    
+.       --->        Raspberry PI        --->    OPC UA (Codesys / Node-red)
+.       --->                            --->    Node-Red Dashboard for visualization
+MCU[n]  --->
 ```
 
 # Programming enviroments
 
-For programming microcontrollers we use mostly [PlatformIO IDE](https://platformio.org/platformio-ide).
+For programming microcontrollers we use [PlatformIO IDE](https://platformio.org/platformio-ide).
 
 For programming of Raspberry Pi is used [Codesys](https://store.codesys.com/codesys.html?___store=en) and [Rapsberry Pi extension](https://store.codesys.com/codesys-control-for-raspberry-pi-sl.html)
 
-# Way to target:
 
-* make sensors running with microcontroller,
-* set up a communication protocol between microcontroller and Raspberry Pi,
-    * decide, which connection is the best - Serial, I2C, consider others,
-    * design a way how to transfer data (a binary protocol, ...), espacialy consider and test period,
-        * who should measure period?,
-* make a way how to transfer data to PLC,
-* consider who should evaluate data, make evaluation and predictive algorithms and transfer to top level PLC,
-    * this shoul probably be Raspberry PI, than there should be only tiny data line to PLC,
-* consider adding other sensor,
-    * new vibration sensor, misalignment sensor (ultrasonic).
+# Folders
 
-# Current development architecture and source code description
+The project is devided into the following folders:
 
-We are back on the trees. 
-
-We have found that there is a suitable protocol for communication between microcontroller and Raspberry PI - Modbus. It is implemented to Codesys enviroment - there is a [tutorial](https://www.youtube.com/watch?v=lKORELpasPM) how to run that on Raspberry Pi and also a [library](https://github.com/JhonControl/ESP8266_Industrial_ModbusTCP_V2) for ESP8266 microcontroller.
-
-We have established the data transfer between ESP8266 and Raspberry Pi over Modbus.
-
+* MicrocotrollerSketch
+    * sketch written in PlatformIO IDE handling the MCU level
+* RaspberryPI
+    * sketch written Codesys for Raspberry PI
+* documentation
+    * includes a link to a written documentation.
