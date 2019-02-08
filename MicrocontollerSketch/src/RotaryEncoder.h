@@ -6,7 +6,7 @@
 #define RotaryEncoder_h
 #include "Arduino.h"
 
-// specify GPIO pins, to which are channel A and B pluged in 
+// specify GPIO pins, to which are channel A and B plugged in 
 const int encoder0PinA  = 25;
 const int encoder0PinB  = 26;
 

@@ -110,7 +110,7 @@ const int mqttMessagesSendingPeriod = 300;
 // Adjust the mqtt server adress
 const char* mqtt_server = "192.168.1.127";
 #ifdef DEVICE_THERMOMETER_DS18B20
-// Adjust the mqtt topics
+// Adjust mqtt topics
 const char* mqttTopicDS18B20Encoder = "/Temperature/";
 #endif
 #ifdef DEVICE_ROTARY_ENCODER
